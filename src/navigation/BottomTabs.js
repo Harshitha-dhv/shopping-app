@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
+import HomeStack from './HomeStack';
 import CategoriesStack from './CategoriesStack';
 import CartStack from './CartStack';
 import OrdersScreen from '../screens/OrdersScreen';
@@ -31,14 +31,18 @@ const BottomTabs = () => {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeStack}
+        options={{ headerShown: false }}
+      />
 
       <Tab.Screen
         name="Categories"
         component={CategoriesStack}
         options={{ headerShown: false }}
         listeners={({ navigation }) => ({
-          tabPress: e => { 
+          tabPress: e => {
             navigation.navigate('Categories', {
               screen: 'CategoriesHome',
             });

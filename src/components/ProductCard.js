@@ -1,99 +1,74 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 
 import { CartContext } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 
+const { width } = Dimensions.get("window");
+
 const ProductCard = ({ item }) => {
-  const navigation = useNavigation();
-
-  const { addToCart, removeFromCart, cartItems } =
+  const { cart, addToCart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useContext(CartContext);
+  const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
 
-  const { wishlist, addToWishlist, removeFromWishlist } =
-    useContext(WishlistContext);
+  // Quantity derived from cart
+  const quantity = useMemo(() => {
+    const cartItem = cart.find((i) => i.id === item.id);
+    return cartItem ? cartItem.quantity : 0;
+  }, [cart, item.id]);
 
-  const [quantity, setQuantity] = useState(0);
-
-  // Check if item already in cart
-  useEffect(() => {
-    const cartItem = cartItems?.find((i) => i.id === item.id);
-    if (cartItem) setQuantity(cartItem.quantity);
-    else setQuantity(0);
-  }, [cartItems]);
-
-  // Check if item is in wishlist
-  const isInWishlist = wishlist?.some((i) => i.id === item.id);
+  // Wishlist check
+  const isInWishlist = useMemo(() => wishlist.some((i) => i.id === item.id), [wishlist]);
 
   const handleWishlist = () => {
-    if (isInWishlist) {
-      removeFromWishlist(item.id);
-    } else {
-      addToWishlist(item);
-      navigation.navigate("Wishlist"); // navigate after adding
-    }
+    if (isInWishlist) removeFromWishlist(item.id);
+    else addToWishlist(item);
   };
 
   const handleAdd = () => {
-    setQuantity(quantity + 1);
-    addToCart(item);
+    if (quantity === 0) addToCart(item);
+    else increaseQuantity(item.id);
   };
 
   const handleRemove = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-      removeFromCart(item);
-    } else {
-      setQuantity(0);
-      removeFromCart(item);
-    }
+    if (quantity > 1) decreaseQuantity(item.id);
+    else removeFromCart(item.id);
   };
 
   return (
     <View style={styles.card}>
-      {/* ❤️ Wishlist Heart */}
-      <TouchableOpacity
-        style={styles.heartIcon}
-        onPress={handleWishlist}
-      >
-        <Text style={{ fontSize: 20 }}>
-          {isInWishlist ? "❤️" : "🤍"}
-        </Text>
+      {/* Wishlist Heart */}
+      <TouchableOpacity style={styles.heartIcon} onPress={handleWishlist}>
+        <Text style={{ fontSize: 20 }}>{isInWishlist ? "❤️" : "🤍"}</Text>
       </TouchableOpacity>
 
       <Image source={{ uri: item.image }} style={styles.image} />
 
       <View style={styles.infoContainer}>
-        <Text style={styles.name} numberOfLines={1}>
-          {item.name}
-        </Text>
-
+        <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
         <Text style={styles.price}>₹ {item.price}</Text>
-
-        <Text style={styles.rating}>⭐ {item.rating}</Text>
+        <Text style={styles.rating}>⭐ {item.rating.toFixed(1)}</Text>
 
         {quantity === 0 ? (
-          <View style={styles.addButtonContainer}>
-            <Text style={styles.addButton} onPress={handleAdd}>
-              Add to Cart
-            </Text>
-          </View>
+          <TouchableOpacity style={styles.addButtonContainer} onPress={handleAdd}>
+            <Text style={styles.addButton}>Add to Cart</Text>
+          </TouchableOpacity>
         ) : (
           <View style={styles.quantityContainer}>
-            <Text style={styles.qtyButton} onPress={handleRemove}>
-              -
-            </Text>
+            <TouchableOpacity onPress={handleRemove} style={styles.qtyButtonContainer}>
+              <Text style={styles.qtyButton}>-</Text>
+            </TouchableOpacity>
             <Text style={styles.quantity}>{quantity}</Text>
-            <Text style={styles.qtyButton} onPress={handleAdd}>
-              +
-            </Text>
+            <TouchableOpacity onPress={handleAdd} style={styles.qtyButtonContainer}>
+              <Text style={styles.qtyButton}>+</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -105,11 +80,15 @@ export default ProductCard;
 
 const styles = StyleSheet.create({
   card: {
-    width: 170,
+    width: width * 0.42,
     backgroundColor: "#fff",
     borderRadius: 10,
     margin: 10,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     position: "relative",
   },
   heartIcon: {
@@ -165,12 +144,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 8,
   },
+  qtyButtonContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
   qtyButton: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#000",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
   },
   quantity: {
     fontSize: 16,

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,14 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-} from "react-native";
-import { WishlistContext } from "../context/WishlistContext";
+} from 'react-native';
+import { WishlistContext } from '../context/WishlistContext';
+import { CartContext } from '../context/CartContext';
 import Icon from 'react-native-vector-icons/Feather';
 
 const WishlistScreen = ({ navigation }) => {
-  const { wishlist, removeFromWishlist } =
-    useContext(WishlistContext);
+  const { wishlist, removeFromWishlist } = useContext(WishlistContext);
+  const { addToCart } = useContext(CartContext);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
@@ -26,11 +27,19 @@ const WishlistScreen = ({ navigation }) => {
         <Text style={styles.rating}>⭐ {item.rating}</Text>
       </View>
 
+      <TouchableOpacity onPress={() => removeFromWishlist(item.id)}>
+        <Icon name="trash-2" size={20} color="#fa1010da" />
+      </TouchableOpacity>
       <TouchableOpacity
-        style={styles.removeButton}
-        onPress={() => removeFromWishlist(item.id)}
+        style={styles.addButtonContainer}
+        onPress={() => {
+          addToCart(item);
+          navigation.navigate('MainTabs', {
+            screen: 'Cart',
+          });
+        }}
       >
-        <Text style={styles.removeText}>Remove</Text>
+        <Text style={styles.addButton}>Add to Cart</Text>
       </TouchableOpacity>
     </View>
   );
@@ -40,23 +49,23 @@ const WishlistScreen = ({ navigation }) => {
       {wishlist.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>💔</Text>
-          <Text style={styles.emptyText}>
-            Your wishlist is empty
-          </Text>
+          <Text style={styles.emptyText}>Your wishlist is empty</Text>
         </View>
       ) : (
         <>
-           <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                  <Icon name="chevron-left" size={28} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.title}>My Wishlist</Text>
-              </View>
-          
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <Icon name="chevron-left" size={28} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.title}>My Wishlist</Text>
+          </View>
 
           <FlatList
             data={wishlist}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
           />
@@ -71,13 +80,13 @@ export default WishlistScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     padding: 15,
   },
-    header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 2,
     paddingHorizontal: 15,
     paddingBottom: 10,
     borderBottomWidth: 1,
@@ -85,14 +94,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 15,
-    marginTop:15,
+    marginTop: 15,
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyIcon: {
     fontSize: 50,
@@ -100,18 +109,18 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: "gray",
+    color: 'gray',
   },
   card: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
+    flexDirection: 'row',
+    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
     marginBottom: 15,
     elevation: 2,
-    alignItems: "center",
+    alignItems: 'center',
   },
-   backButton: {
+  backButton: {
     marginRight: 10,
   },
   image: {
@@ -125,26 +134,28 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   price: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginVertical: 4,
   },
   rating: {
     fontSize: 13,
-    color: "gray",
+    color: 'gray',
   },
-  removeButton: {
-    backgroundColor: "#000",
+
+  addButtonContainer: {
+    backgroundColor: '#000',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
+    marginLeft: 8,
   },
-  removeText: {
-    color: "#fff",
+  addButton: {
+    color: '#fff',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
