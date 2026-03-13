@@ -1,22 +1,22 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 
-import { products } from '../data/products';
-import { categories } from '../data/categories';
-import { banners } from '../data/banners';
-import { WishlistContext } from '../context/WishlistContext';
-import { CartContext } from '../context/CartContext';
+import { products } from "../data/products";
+import { categories } from "../data/categories";
+import { banners } from "../data/banners";
+import { WishlistContext } from "../context/WishlistContext";
+import { CartContext } from "../context/CartContext";
 
-import ProductCard from '../components/ProductCard';
-import CategoryCard from '../components/CategoryCard';
-import Banner from '../components/Banner';
+import ProductCard from "../components/ProductCard";
+import CategoryCard from "../components/CategoryCard";
+import Banner from "../components/Banner";
 
 const HomeScreen = ({ navigation }) => {
   const { wishlist } = useContext(WishlistContext);
@@ -25,14 +25,15 @@ const HomeScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerTitle: 'Home',
+      headerTitle: "Home",
       headerRight: () => (
         <TouchableOpacity
-          onPress={() => navigation.navigate('Wishlist')}
+          onPress={() => navigation.navigate("Wishlist")}
           style={{ marginRight: 15 }}
         >
           <View>
-            <Text style={{ fontSize: 28,paddingHorizontal:7}}>❤️</Text>
+            <Text style={{ fontSize: 26 }}>❤️</Text>
+
             {wishlist.length > 0 && (
               <View style={styles.wishlistBadge}>
                 <Text style={styles.wishlistBadgeText}>
@@ -53,31 +54,37 @@ const HomeScreen = ({ navigation }) => {
         data={banners}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => <Banner item={item} navigation={navigation} />}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.bannerContainer}
+        renderItem={({ item }) => (
+          <Banner item={item} navigation={navigation} />
+        )}
       />
 
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       <TouchableOpacity
         style={styles.searchBar}
-        onPress={() => navigation.navigate('Search', { products })}
+        onPress={() => navigation.navigate("Search", { products })}
       >
-        <Icon name="search" size={18} color="gray" />
+        <Icon name="search" size={20} color="#777" />
         <Text style={styles.searchText}>Search for products</Text>
       </TouchableOpacity>
 
       {/* CATEGORIES */}
       <Text style={styles.sectionTitle}>Categories</Text>
+
       <FlatList
         data={categories}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.categoryContainer}
         renderItem={({ item }) => (
           <CategoryCard item={item} navigation={navigation} />
         )}
       />
 
+      {/* PRODUCTS TITLE */}
       <Text style={styles.sectionTitle}>Featured Products</Text>
     </View>
   );
@@ -86,11 +93,14 @@ const HomeScreen = ({ navigation }) => {
     <FlatList
       data={products.slice(0, 6)}
       numColumns={2}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => <ProductCard item={item} addToCart={addToCart} />}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <ProductCard item={item} addToCart={addToCart} />
+      )}
       ListHeaderComponent={renderHeader}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+      columnWrapperStyle={styles.productRow}
+      contentContainerStyle={styles.mainContainer}
     />
   );
 };
@@ -98,45 +108,66 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 10,
-    marginHorizontal: 15,
-    backgroundColor: '#fff',
+  mainContainer: {
+    paddingBottom: 20,
+    backgroundColor: "#fff",
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    margin: 15,
+
+  bannerContainer: {
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
+
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f3f3f3",
     marginHorizontal: 15,
-    marginTop: 10,
+    marginTop: 15,
     paddingHorizontal: 12,
     height: 45,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
   },
+
   searchText: {
     marginLeft: 10,
     fontSize: 15,
-    color: '#777',
+    color: "#777",
   },
+
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
+    marginHorizontal: 15,
+  },
+
+  categoryContainer: {
+    paddingHorizontal: 10,
+  },
+
+  productRow: {
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+  },
+
   wishlistBadge: {
-    position: 'absolute',
-    right: -2,
-    top: -2,
-    backgroundColor: 'red',
-    borderRadius: 5,
-    paddingHorizontal: 5,
+    position: "absolute",
+    right: -4,
+    top: -4,
+    backgroundColor: "red",
+    borderRadius: 10,
     minWidth: 18,
-    alignItems: 'center',
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
   },
+
   wishlistBadgeText: {
-    color: 'white',
-    fontSize:10,
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { CartContext } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
@@ -14,18 +15,25 @@ import { WishlistContext } from "../context/WishlistContext";
 const { width } = Dimensions.get("window");
 
 const ProductCard = ({ item }) => {
+  const navigation = useNavigation();
+
   const { cart, addToCart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useContext(CartContext);
-  const { wishlist, addToWishlist, removeFromWishlist } = useContext(WishlistContext);
 
-  // Quantity derived from cart
+  const { wishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
+
+  // Get quantity from cart
   const quantity = useMemo(() => {
     const cartItem = cart.find((i) => i.id === item.id);
     return cartItem ? cartItem.quantity : 0;
   }, [cart, item.id]);
 
   // Wishlist check
-  const isInWishlist = useMemo(() => wishlist.some((i) => i.id === item.id), [wishlist]);
+  const isInWishlist = useMemo(
+    () => wishlist.some((i) => i.id === item.id),
+    [wishlist]
+  );
 
   const handleWishlist = () => {
     if (isInWishlist) removeFromWishlist(item.id);
@@ -42,31 +50,56 @@ const ProductCard = ({ item }) => {
     else removeFromCart(item.id);
   };
 
+  const goToDetails = () => {
+    navigation.navigate("ProductDetails", { product: item });
+  };
+
   return (
     <View style={styles.card}>
-      {/* Wishlist Heart */}
+      {/* Wishlist Button */}
       <TouchableOpacity style={styles.heartIcon} onPress={handleWishlist}>
         <Text style={{ fontSize: 20 }}>{isInWishlist ? "❤️" : "🤍"}</Text>
       </TouchableOpacity>
 
-      <Image source={{ uri: item.image }} style={styles.image} />
+      {/* Product Click Area */}
+      <TouchableOpacity activeOpacity={0.9} onPress={goToDetails}>
+        <Image source={{ uri: item.image }} style={styles.image} />
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.price}>₹ {item.price}</Text>
-        <Text style={styles.rating}>⭐ {item.rating.toFixed(1)}</Text>
+        <View style={styles.infoContainer}>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.name}
+          </Text>
 
+          <Text style={styles.price}>₹ {item.price}</Text>
+
+          <Text style={styles.rating}>⭐ {item.rating.toFixed(1)}</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Cart Section */}
+      <View style={{ padding: 10 }}>
         {quantity === 0 ? (
-          <TouchableOpacity style={styles.addButtonContainer} onPress={handleAdd}>
+          <TouchableOpacity
+            style={styles.addButtonContainer}
+            onPress={handleAdd}
+          >
             <Text style={styles.addButton}>Add to Cart</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.quantityContainer}>
-            <TouchableOpacity onPress={handleRemove} style={styles.qtyButtonContainer}>
+            <TouchableOpacity
+              onPress={handleRemove}
+              style={styles.qtyButtonContainer}
+            >
               <Text style={styles.qtyButton}>-</Text>
             </TouchableOpacity>
+
             <Text style={styles.quantity}>{quantity}</Text>
-            <TouchableOpacity onPress={handleAdd} style={styles.qtyButtonContainer}>
+
+            <TouchableOpacity
+              onPress={handleAdd}
+              style={styles.qtyButtonContainer}
+            >
               <Text style={styles.qtyButton}>+</Text>
             </TouchableOpacity>
           </View>
@@ -142,7 +175,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 6,
-    marginTop: 8,
   },
   qtyButtonContainer: {
     paddingHorizontal: 12,

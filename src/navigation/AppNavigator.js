@@ -1,10 +1,11 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../screens/LoginScreen";
-import BottomTabs from "./BottomTabs";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from '../screens/LoginScreen';
+import BottomTabs from './BottomTabs';
 import { CartProvider } from '../context/CartContext';
-import WishlistScreen from "../screens/WishlistScreen";
+import WishlistScreen from '../screens/WishlistScreen';
+import ProductDetailsScreen from '../screens/ProductDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +15,16 @@ const AppNavigator = () => {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="MainTabs" component={BottomTabs} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="MainTabs"
+            component={BottomTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ProductDetails"
+            component={ProductDetailsScreen}
+            options={{ title: 'Product Details' }}
+          />
           <Stack.Screen name="Wishlist" component={WishlistScreen} />
         </Stack.Navigator>
       </NavigationContainer>
