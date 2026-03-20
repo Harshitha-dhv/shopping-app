@@ -46,35 +46,6 @@ import { CartContext } from '../context/CartContext';
         </TouchableOpacity>
       ))}
 
-      {/* ================= ORDER SUMMARY ================= */}
-      <View style={styles.summaryBox}>
-        <Text style={styles.sectionTitle}>Order Summary</Text>
-
-        <View style={styles.row}>
-          <Text>Subtotal</Text>
-          <Text>₹ {subtotal.toFixed(2)}</Text>
-        </View>
-
-        <View style={styles.row}>
-          <Text>Delivery</Text>
-          <Text>
-            {deliveryFee === 0 ? 'Free' : `₹ ${deliveryFee.toFixed(2)}`}
-          </Text>
-        </View>
-
-        <View style={styles.row}>
-          <Text>Tax (5%)</Text>
-          <Text>₹ {tax.toFixed(2)}</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.row}>
-          <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>₹ {grandTotal.toFixed(2)}</Text>
-        </View>
-      </View>
-
       {/* ================= PAY BUTTON ================= */}
       <TouchableOpacity
         style={[

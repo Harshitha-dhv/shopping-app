@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,33 +6,36 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-import { CartContext } from "../context/CartContext";
-import { WishlistContext } from "../context/WishlistContext";
+import { CartContext } from '../context/CartContext';
+import { WishlistContext } from '../context/WishlistContext';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const ProductCard = ({ item }) => {
   const navigation = useNavigation();
 
-  const { cart, addToCart, increaseQuantity, decreaseQuantity, removeFromCart } =
-    useContext(CartContext);
+  const {
+    cart,
+    addToCart,
+    increaseQuantity,
+  } = useContext(CartContext);
 
   const { wishlist, addToWishlist, removeFromWishlist } =
     useContext(WishlistContext);
 
   // Get quantity from cart
   const quantity = useMemo(() => {
-    const cartItem = cart.find((i) => i.id === item.id);
+    const cartItem = cart.find(i => i.id === item.id);
     return cartItem ? cartItem.quantity : 0;
   }, [cart, item.id]);
 
   // Wishlist check
   const isInWishlist = useMemo(
-    () => wishlist.some((i) => i.id === item.id),
-    [wishlist]
+    () => wishlist.some(i => i.id === item.id),
+    [wishlist],
   );
 
   const handleWishlist = () => {
@@ -45,20 +48,15 @@ const ProductCard = ({ item }) => {
     else increaseQuantity(item.id);
   };
 
-  const handleRemove = () => {
-    if (quantity > 1) decreaseQuantity(item.id);
-    else removeFromCart(item.id);
-  };
-
   const goToDetails = () => {
-    navigation.navigate("ProductDetails", { product: item });
+    navigation.navigate('ProductDetails', { product: item });
   };
 
   return (
     <View style={styles.card}>
       {/* Wishlist Button */}
       <TouchableOpacity style={styles.heartIcon} onPress={handleWishlist}>
-        <Text style={{ fontSize: 20 }}>{isInWishlist ? "❤️" : "🤍"}</Text>
+        <Text style={{ fontSize: 20 }}>{isInWishlist ? '❤️' : '🤍'}</Text>
       </TouchableOpacity>
 
       {/* Product Click Area */}
@@ -86,23 +84,14 @@ const ProductCard = ({ item }) => {
             <Text style={styles.addButton}>Add to Cart</Text>
           </TouchableOpacity>
         ) : (
-          <View style={styles.quantityContainer}>
-            <TouchableOpacity
-              onPress={handleRemove}
-              style={styles.qtyButtonContainer}
-            >
-              <Text style={styles.qtyButton}>-</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.quantity}>{quantity}</Text>
-
-            <TouchableOpacity
-              onPress={handleAdd}
-              style={styles.qtyButtonContainer}
-            >
-              <Text style={styles.qtyButton}>+</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.viewCartButton}
+            onPress={() =>  navigation.navigate('MainTabs', {
+            screen: 'Cart',
+          })}
+          >
+            <Text style={styles.viewCartText}>View Cart</Text>
+          </TouchableOpacity>
         )}
       </View>
     </View>
@@ -114,28 +103,28 @@ export default ProductCard;
 const styles = StyleSheet.create({
   card: {
     width: width * 0.42,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 10,
     margin: 10,
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    position: "relative",
+    position: 'relative',
   },
   heartIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
     zIndex: 10,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 5,
     elevation: 5,
   },
   image: {
-    width: "100%",
+    width: '100%',
     height: 150,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -145,48 +134,48 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   price: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginVertical: 5,
   },
   rating: {
     fontSize: 13,
-    color: "gray",
+    color: 'gray',
   },
   addButtonContainer: {
     marginTop: 8,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     borderRadius: 6,
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 8,
   },
   addButton: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 13,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 6,
   },
-  qtyButtonContainer: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  qtyButton: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
-  },
-  quantity: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+ viewCartButton: {
+  marginTop: 8,
+  backgroundColor: "#FB641B",
+  borderRadius: 6,
+  alignItems: "center",
+  paddingVertical: 8,
+},
+
+viewCartText: {
+  color: "#fff",
+  fontSize: 13,
+  fontWeight: "bold",
+},
 });
